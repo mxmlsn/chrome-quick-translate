@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Quick Translate</title>
+    <link rel="stylesheet" href="popup.css">
+  </head>
+  <body>
+    <main class="shell">
+      <header class="header">
+        <h1>Quick Translate</h1>
+        <p>Translate selected text to Russian with DeepL API Free.</p>
+      </header>
+
+      <form id="settings-form" class="form">
+        <label class="field">
+          <span>DeepL API key</span>
+          <input id="deepl-api-key" type="password" autocomplete="off" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx:fx">
+        </label>
+
+        <label class="field">
+          <span>Target language</span>
+          <select id="target-lang">
+            <option value="RU">Russian</option>
+            <option value="EN-US">English (US)</option>
+            <option value="EN-GB">English (UK)</option>
+            <option value="DE">German</option>
+            <option value="FR">French</option>
+            <option value="ES">Spanish</option>
+            <option value="IT">Italian</option>
+            <option value="UK">Ukrainian</option>
+          </select>
+        </label>
+
+        <p id="status" class="status" role="status" aria-live="polite"></p>
+
+        <div class="actions">
+          <button type="submit">Save settings</button>
+          <button id="test-key" type="button" class="secondary">Test key</button>
+        </div>
+      </form>
+    </main>
+
+    <script src="popup.js"></script>
+  </body>
+</html>

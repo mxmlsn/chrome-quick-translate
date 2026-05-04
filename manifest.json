@@ -1,0 +1,22 @@
+{
+  "manifest_version": 3,
+  "name": "Chrome Quick Translate",
+  "version": "0.1.0",
+  "description": "Translate selected text with DeepL.",
+  "permissions": ["storage"],
+  "host_permissions": ["https://api-free.deepl.com/*", "https://api.deepl.com/*"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "action": {
+    "default_title": "Quick Translate",
+    "default_popup": "popup.html"
+  }
+}
