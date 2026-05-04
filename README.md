@@ -1,56 +1,56 @@
 # Chrome Quick Translate
 
-Simple Chrome extension for translating selected text with DeepL API Free.
+Простое расширение для Chrome, которое переводит выделенный текст через DeepL API Free.
 
-## Features
+## Возможности
 
-- Translate selected text on any web page
-- Floating translate button near the cursor
-- Translation popup on the page
-- Default target language: Russian
-- DeepL API key stored in Chrome extension storage
+- Перевод выделенного текста на веб-страницах
+- Маленькая кнопка перевода рядом с местом, где отпущен курсор
+- Всплывающее окно с переводом прямо на странице
+- Язык перевода по умолчанию: русский
+- Сохранение DeepL API ключа в хранилище расширения Chrome
 
-## Installation
+## Установка
 
-1. Clone this repository or download it as a ZIP archive.
-2. Open Chrome and go to:
+1. Склонируйте репозиторий или скачайте его ZIP-архивом.
+2. Откройте Chrome и перейдите по адресу:
 
 ```text
 chrome://extensions
 ```
 
-3. Enable Developer mode.
-4. Click Load unpacked.
-5. Select the project folder.
+3. Включите режим разработчика.
+4. Нажмите Load unpacked.
+5. Выберите папку проекта.
 
-## DeepL API key
+## DeepL API ключ
 
-This extension uses DeepL API Free.
+Расширение использует DeepL API Free.
 
-1. Create a DeepL API Free account:
+1. Создайте аккаунт DeepL API Free:
 
 ```text
 https://www.deepl.com/pro-api
 ```
 
-2. Open the extension popup.
-3. Paste your DeepL API key.
-4. Click Save settings.
-5. Click Test key to verify that the key works.
+2. Откройте popup расширения.
+3. Вставьте DeepL API ключ.
+4. Нажмите Save settings.
+5. Нажмите Test key, чтобы проверить ключ.
 
-Free DeepL API keys usually end with `:fx`.
+Бесплатные DeepL API ключи обычно заканчиваются на `:fx`.
 
-## Usage
+## Использование
 
-1. Select text on a web page.
-2. A small blue translate button appears where you release the cursor.
-3. Click the button.
-4. The translation appears in a popup.
-5. Click outside the popup to close it.
-6. Use the small handle in the top-right corner to drag the popup.
+1. Выделите текст на странице.
+2. Рядом с местом, где вы отпустили курсор, появится маленькая синяя кнопка.
+3. Нажмите на кнопку.
+4. Перевод появится во всплывающем окне.
+5. Чтобы закрыть окно, кликните вне его.
+6. Чтобы переместить окно, перетащите его за маленькую иконку в правом верхнем углу.
 
-## Security note
+## Важное замечание по безопасности
 
-This MVP stores the DeepL API key directly in Chrome extension storage. This is acceptable for personal use, but not recommended for a public extension.
+В текущей MVP-версии DeepL API ключ хранится прямо в хранилище Chrome расширения. Это подходит для личного использования, но не рекомендуется для публичного расширения.
 
-For public distribution, use a backend proxy such as Cloudflare Worker and keep the DeepL API key on the server.
+Для публичного распространения лучше использовать backend-proxy, например Cloudflare Worker, и хранить DeepL API ключ на сервере.
