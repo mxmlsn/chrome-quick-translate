@@ -33,6 +33,38 @@
           </select>
         </label>
 
+        <label class="field">
+          <span>Theme</span>
+          <select id="theme">
+            <option value="light">Light</option>
+            <option value="paper">Paper</option>
+            <option value="mint">Mint</option>
+            <option value="sky">Sky</option>
+            <option value="dark">Dark</option>
+            <option value="graphite">Graphite</option>
+            <option value="midnight">Midnight</option>
+            <option value="berry">Berry</option>
+          </select>
+        </label>
+
+        <label class="field">
+          <span>Font</span>
+          <select id="font-family">
+            <option value="sans">System Sans</option>
+            <option value="times">Times New Roman</option>
+            <option value="georgia">Georgia</option>
+          </select>
+        </label>
+
+        <div class="field">
+          <span>Font size</span>
+          <div class="font-size-control">
+            <button id="decrease-font-size" type="button" class="secondary compact" aria-label="Decrease font size">-</button>
+            <span id="font-size-value" class="font-size-value">15px</span>
+            <button id="increase-font-size" type="button" class="secondary compact" aria-label="Increase font size">+</button>
+          </div>
+        </div>
+
         <p id="status" class="status" role="status" aria-live="polite"></p>
 
         <div class="actions">

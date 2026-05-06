@@ -3,15 +3,36 @@ const PANEL_ID = "quick-translate-panel";
 const STYLE_ID = "quick-translate-style";
 const SELECTION_MIN_LENGTH = 1;
 const BUTTON_SIZE = 24;
-const PANEL_MIN_WIDTH = 80;
+const PANEL_MIN_WIDTH = 180;
 
 let selectedText = "";
 let selectedRect = null;
 let hideButtonTimer = null;
 let suppressButtonUntil = 0;
 let lastMouseUpPoint = null;
+let selectedTheme = "light";
+let selectedFontFamily = "sans";
+let selectedFontSize = 15;
 
 injectStyles();
+chrome.storage.sync.get({ theme: "light", fontFamily: "sans", fontSize: 15 }, (settings) => {
+  selectedTheme = settings.theme;
+  selectedFontFamily = settings.fontFamily;
+  selectedFontSize = settings.fontSize;
+});
+chrome.storage.onChanged.addListener((changes, areaName) => {
+  if (areaName === "sync" && changes.theme) {
+    selectedTheme = changes.theme.newValue || "light";
+  }
+
+  if (areaName === "sync" && changes.fontFamily) {
+    selectedFontFamily = changes.fontFamily.newValue || "sans";
+  }
+
+  if (areaName === "sync" && changes.fontSize) {
+    selectedFontSize = changes.fontSize.newValue || 15;
+  }
+});
 document.addEventListener("mouseup", handleMouseUpSelection);
 document.addEventListener("keyup", handleSelectionChange);
 document.addEventListener("scroll", removeButton, true);
@@ -90,6 +111,7 @@ function showButton(point) {
 
   const button = document.createElement("button");
   button.id = BUTTON_ID;
+  button.dataset.theme = selectedTheme;
   button.type = "button";
   button.setAttribute("aria-label", "Translate selected text");
   button.textContent = "中";
@@ -139,10 +161,13 @@ function showPanel(message, kind) {
   const panel = document.createElement("section");
   panel.id = PANEL_ID;
   panel.dataset.kind = kind;
+  panel.dataset.theme = selectedTheme;
   panel.setAttribute("aria-live", "polite");
   panel.style.left = `${getClampedLeft(rect.left, panelWidth)}px`;
   panel.style.top = `${Math.max(8, rect.top + window.scrollY)}px`;
   panel.style.width = `${panelWidth}px`;
+  panel.style.fontFamily = getPanelFontFamily();
+  panel.style.fontSize = `${selectedFontSize}px`;
 
   const dragHandle = document.createElement("button");
   dragHandle.type = "button";
@@ -207,6 +232,18 @@ function getPanelWidth(rect) {
   return Math.round(Math.min(maxWidth, Math.max(PANEL_MIN_WIDTH, selectionWidth)));
 }
 
+function getPanelFontFamily() {
+  if (selectedFontFamily === "times") {
+    return "\"Times New Roman\", Times, serif";
+  }
+
+  if (selectedFontFamily === "georgia") {
+    return "Georgia, \"Times New Roman\", Times, serif";
+  }
+
+  return "system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif";
+}
+
 function handleOutsideMouseDown(event) {
   const target = event.target;
 
@@ -248,15 +285,54 @@ function injectStyles() {
       border: 0;
       border-radius: 7px;
       padding: 0;
-      color: #ffffff;
-      background: #2563eb;
+      color: var(--quick-translate-button-text, #ffffff);
+      background: var(--quick-translate-button-bg, #2563eb);
       box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
       font: 700 14px/1 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       cursor: pointer;
     }
 
     #${BUTTON_ID}:hover {
-      background: #1d4ed8;
+      background: var(--quick-translate-button-hover-bg, #1d4ed8);
+    }
+
+    #${BUTTON_ID}[data-theme="paper"] {
+      --quick-translate-button-bg: #0f766e;
+      --quick-translate-button-hover-bg: #0f5f59;
+    }
+
+    #${BUTTON_ID}[data-theme="mint"] {
+      --quick-translate-button-bg: #15803d;
+      --quick-translate-button-hover-bg: #166534;
+    }
+
+    #${BUTTON_ID}[data-theme="sky"] {
+      --quick-translate-button-bg: #0369a1;
+      --quick-translate-button-hover-bg: #075985;
+    }
+
+    #${BUTTON_ID}[data-theme="dark"] {
+      --quick-translate-button-text: #111827;
+      --quick-translate-button-bg: #60a5fa;
+      --quick-translate-button-hover-bg: #3b82f6;
+    }
+
+    #${BUTTON_ID}[data-theme="graphite"] {
+      --quick-translate-button-text: #18181b;
+      --quick-translate-button-bg: #d4d4d8;
+      --quick-translate-button-hover-bg: #a1a1aa;
+    }
+
+    #${BUTTON_ID}[data-theme="midnight"] {
+      --quick-translate-button-text: #082f49;
+      --quick-translate-button-bg: #38bdf8;
+      --quick-translate-button-hover-bg: #7dd3fc;
+    }
+
+    #${BUTTON_ID}[data-theme="berry"] {
+      --quick-translate-button-text: #3b0764;
+      --quick-translate-button-bg: #f0abfc;
+      --quick-translate-button-hover-bg: #f5d0fe;
     }
 
     #${BUTTON_ID}:focus-visible,
@@ -269,17 +345,73 @@ function injectStyles() {
       position: absolute;
       z-index: 2147483646;
       max-width: calc(100vw - 16px);
-      border: 1px solid #e5e7eb;
+      border: 1px solid var(--quick-translate-border, rgb(229 231 235 / 0.65));
       border-radius: 14px;
       padding: 12px;
-      color: #111827;
-      background: #ffffff;
+      color: var(--quick-translate-text, #111827);
+      background: var(--quick-translate-bg, #ffffff);
       box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-      font: 15px/1.45 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font: 15px/1.6 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
 
     #${PANEL_ID}[data-kind="error"] {
       border-color: #fecaca;
+    }
+
+    #${PANEL_ID}[data-theme="paper"] {
+      --quick-translate-bg: #fafaf9;
+      --quick-translate-text: #1c1917;
+      --quick-translate-border: rgb(214 211 209 / 0.75);
+      --quick-translate-handle-bg: #f5f5f4;
+      --quick-translate-handle-text: #57534e;
+    }
+
+    #${PANEL_ID}[data-theme="mint"] {
+      --quick-translate-bg: #f0fdf4;
+      --quick-translate-text: #052e16;
+      --quick-translate-border: rgb(187 247 208 / 0.8);
+      --quick-translate-handle-bg: #dcfce7;
+      --quick-translate-handle-text: #166534;
+    }
+
+    #${PANEL_ID}[data-theme="sky"] {
+      --quick-translate-bg: #f0f9ff;
+      --quick-translate-text: #082f49;
+      --quick-translate-border: rgb(186 230 253 / 0.85);
+      --quick-translate-handle-bg: #e0f2fe;
+      --quick-translate-handle-text: #075985;
+    }
+
+    #${PANEL_ID}[data-theme="dark"] {
+      --quick-translate-bg: #111827;
+      --quick-translate-text: #f9fafb;
+      --quick-translate-border: rgb(75 85 99 / 0.8);
+      --quick-translate-handle-bg: #1f2937;
+      --quick-translate-handle-text: #d1d5db;
+    }
+
+    #${PANEL_ID}[data-theme="graphite"] {
+      --quick-translate-bg: #18181b;
+      --quick-translate-text: #fafafa;
+      --quick-translate-border: rgb(82 82 91 / 0.8);
+      --quick-translate-handle-bg: #27272a;
+      --quick-translate-handle-text: #d4d4d8;
+    }
+
+    #${PANEL_ID}[data-theme="midnight"] {
+      --quick-translate-bg: #0f172a;
+      --quick-translate-text: #e0f2fe;
+      --quick-translate-border: rgb(51 65 85 / 0.9);
+      --quick-translate-handle-bg: #1e293b;
+      --quick-translate-handle-text: #bae6fd;
+    }
+
+    #${PANEL_ID}[data-theme="berry"] {
+      --quick-translate-bg: #2e1065;
+      --quick-translate-text: #faf5ff;
+      --quick-translate-border: rgb(107 33 168 / 0.9);
+      --quick-translate-handle-bg: #3b0764;
+      --quick-translate-handle-text: #e9d5ff;
     }
 
     #${PANEL_ID} .quick-translate-drag-handle {
@@ -293,10 +425,18 @@ function injectStyles() {
       border: 0;
       border-radius: 6px;
       padding: 0;
-      color: #6b7280;
-      background: #f3f4f6;
+      color: var(--quick-translate-handle-text, #6b7280);
+      background: var(--quick-translate-handle-bg, #f3f4f6);
       font: 700 13px/1 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       cursor: grab;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    #${PANEL_ID}:hover .quick-translate-drag-handle,
+    #${PANEL_ID}:focus-within .quick-translate-drag-handle {
+      opacity: 1;
+      pointer-events: auto;
     }
 
     #${PANEL_ID} .quick-translate-drag-handle:active {
@@ -305,8 +445,7 @@ function injectStyles() {
 
     #${PANEL_ID} p {
       margin: 0;
-      padding-right: 24px;
-      color: #111827;
+      color: var(--quick-translate-text, #111827);
       white-space: pre-wrap;
       overflow-wrap: anywhere;
       text-wrap: pretty;
