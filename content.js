@@ -3,7 +3,7 @@ const PANEL_ID = "quick-translate-panel";
 const STYLE_ID = "quick-translate-style";
 const SELECTION_MIN_LENGTH = 1;
 const BUTTON_SIZE = 24;
-const PANEL_MAX_WIDTH = 480;
+const PANEL_MIN_WIDTH = 80;
 
 let selectedText = "";
 let selectedRect = null;
@@ -135,12 +135,14 @@ function showPanel(message, kind) {
   removePanel();
 
   const rect = selectedRect || { left: 8, top: 8, bottom: 8 };
+  const panelWidth = getPanelWidth(rect);
   const panel = document.createElement("section");
   panel.id = PANEL_ID;
   panel.dataset.kind = kind;
   panel.setAttribute("aria-live", "polite");
-  panel.style.left = `${getClampedLeft(rect.left, PANEL_MAX_WIDTH)}px`;
+  panel.style.left = `${getClampedLeft(rect.left, panelWidth)}px`;
   panel.style.top = `${Math.max(8, rect.top + window.scrollY)}px`;
+  panel.style.width = `${panelWidth}px`;
 
   const dragHandle = document.createElement("button");
   dragHandle.type = "button";
@@ -196,6 +198,13 @@ function getClampedTop(viewportTop, elementHeight) {
   const maxTop = window.scrollY + Math.max(8, window.innerHeight - elementHeight - 8);
 
   return Math.min(maxTop, Math.max(minTop, viewportTop + window.scrollY));
+}
+
+function getPanelWidth(rect) {
+  const maxWidth = Math.max(PANEL_MIN_WIDTH, window.innerWidth - 16);
+  const selectionWidth = Number.isFinite(rect.width) ? rect.width : PANEL_MIN_WIDTH;
+
+  return Math.round(Math.min(maxWidth, Math.max(PANEL_MIN_WIDTH, selectionWidth)));
 }
 
 function handleOutsideMouseDown(event) {
@@ -259,7 +268,7 @@ function injectStyles() {
     #${PANEL_ID} {
       position: absolute;
       z-index: 2147483646;
-      width: min(${PANEL_MAX_WIDTH}px, calc(100vw - 16px));
+      max-width: calc(100vw - 16px);
       border: 1px solid #e5e7eb;
       border-radius: 14px;
       padding: 12px;
